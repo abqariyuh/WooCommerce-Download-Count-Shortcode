@@ -1,0 +1,29 @@
+<?php
+// Function to get download count for the current user
+function get_user_download_count() {
+    // Get the current user ID
+    $user_id = get_current_user_id();
+    
+    if (!$user_id) {
+        return 0;
+    }
+
+    global $wpdb;
+
+    // Query to get the download count for the current user
+    $download_count = $wpdb->get_var($wpdb->prepare("
+        SELECT COUNT(*)
+        FROM {$wpdb->prefix}woocommerce_downloadable_product_permissions
+        WHERE user_id = %d
+    ", $user_id));
+
+    return $download_count;
+}
+
+// Shortcode to display download count
+function user_download_count_shortcode() {
+    $download_count = get_user_download_count();
+    return esc_html($download_count);
+}
+add_shortcode('user_download_count', 'user_download_count_shortcode');
+?>
